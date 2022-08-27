@@ -161,11 +161,13 @@
         /// <param name="texParams">Texture parameters (flipped, rotated etc.)</param>
         protected virtual Mat MatFromTexture(T texture, Unity.TextureConversionParams texParams)
         {
-            if (texture is UnityEngine.Texture2D)
+            if (texture is UnityEngine.Texture2D){
+                UnityEngine.Debug.Log("Texture is Texture2D");
                 return Unity.TextureToMat(texture as UnityEngine.Texture2D, texParams);
-            else if (texture is UnityEngine.WebCamTexture)
+            }else if (texture is UnityEngine.WebCamTexture){
+                UnityEngine.Debug.Log("Texture is WebCamTexture");
                 return Unity.TextureToMat(texture as UnityEngine.WebCamTexture, texParams);
-            else
+            }else
                 throw new Exception("FaceProcessor: incorrect input texture type, must be Texture2D or WebCamTexture");
         }
 
@@ -175,21 +177,22 @@
         /// </summary>
         /// <param name="texture">Input texture</param>
         /// <param name="texParams">Texture parameters (flipped, rotated etc.)</param>
-        protected virtual void ImportTexture(T texture, Unity.TextureConversionParams texParams)
+        protected virtual void ImportTexture(Mat texture, Unity.TextureConversionParams texParams)
         {
             // free currently used textures
-            if (null != processingImage)
+            /*if (null != processingImage)
                 processingImage.Dispose();
             if (null != Image)
                 Image.Dispose();
-
+            */ 
+            
             // convert and prepare
-            Image = MatFromTexture(texture, texParams);
-            if (Performance.Downscale > 0 && (Performance.Downscale < Image.Width || Performance.Downscale < Image.Height))
+            //Image = MatFromTexture(texture, texParams);
+            if (Performance.Downscale > 0 && (Performance.Downscale < texture.Width || Performance.Downscale < texture.Height))
             {
                 // compute aspect-respective scaling factor
-                int w = Image.Width;
-                int h = Image.Height;
+                int w = texture.Width;
+                int h = texture.Height;
 
                 // scale by max side
                 if (w >= h)
@@ -207,12 +210,12 @@
 
                 // resize
                 processingImage = new Mat();
-                Cv2.Resize(Image, processingImage, new Size(w, h));
+                Cv2.Resize(texture, processingImage, new Size(w, h));
             }
             else
             {
                 appliedFactor = 1.0;
-                processingImage = Image;
+                processingImage = texture;
             }
         }
 
@@ -222,7 +225,7 @@
         /// <param name="inputTexture">Input Unity texture</param>
         /// <param name="texParams">Texture parameters (flipped, rotated etc.)</param>
         /// <param name="detect">Flag signalling whether we need detection on this frame</param>
-        public virtual void ProcessTexture(T texture, Unity.TextureConversionParams texParams, bool detect = true)
+        public virtual void ProcessTexture(Mat texture, Unity.TextureConversionParams texParams, bool detect = true)
         {
             // convert Unity texture to OpenCv::Mat
             ImportTexture(texture, texParams);
@@ -355,7 +358,7 @@
                     //Calculate angle between eyes
                     float diffX = rightEye.X - leftEye.X;
                     float diffY = rightEye.Y - leftEye.Y;
-                    eyesAngle = UnityEngine.Mathf.Atan2(diffY, diffX);
+                    eyesAngle = -UnityEngine.Mathf.Atan2(diffY, diffX);
                 }
             }
             Faces.Clear();
@@ -383,7 +386,7 @@
         /// <param name="inputTexture">Input Unity texture</param>
         /// <param name="texParams">Texture parameters (flipped, rotated etc.)</param>
         /// <param name="detect">Flag signalling whether we need detection on this frame</param>
-        public override void ProcessTexture(T texture, Unity.TextureConversionParams texParams,  bool detect = true)
+        public override void ProcessTexture(Mat texture, Unity.TextureConversionParams texParams,  bool detect = true)
         {
             bool acceptedFrame = (0 == Performance.SkipRate || 0 == frameCounter++ % Performance.SkipRate);
             base.ProcessTexture(texture, texParams, detect && acceptedFrame);

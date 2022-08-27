@@ -916,6 +916,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1338243988}
   - component: {fileID: 1338243990}
+  - component: {fileID: 1338243991}
+  - component: {fileID: 1338243987}
   - component: {fileID: 1338243989}
   m_Layer: 0
   m_Name: Main
@@ -924,6 +926,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1338243987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338243986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe15c77adbdcd3640909f28d9de61a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScript: {fileID: 1338243990}
+  faces: {fileID: 4900000, guid: b5a4a56dea53356439f7402a2ad463e9, type: 3}
+  eyes: {fileID: 4900000, guid: 8a019e6690a1b554f8cacffc4667c09d, type: 3}
+  shapes: {fileID: 4900000, guid: 1a7362c2a40f6f246b50e6bb2455fe04, type: 3}
+  prevOpenning: 0
+  meanMouthPos: {x: 0, y: 0, z: 0}
+  prevFaceAngle: 0
 --- !u!4 &1338243988
 Transform:
   m_ObjectHideFlags: 0
@@ -965,12 +986,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Surface: {fileID: 770840974}
+  webCamTexture: {fileID: 0}
+  renderedTexture: {fileID: 0}
   posTxt: {fileID: 1441491509}
   mouthGO: {fileID: 6908749898931192141}
-  faces: {fileID: 4900000, guid: b5a4a56dea53356439f7402a2ad463e9, type: 3}
-  eyes: {fileID: 4900000, guid: 8a019e6690a1b554f8cacffc4667c09d, type: 3}
-  shapes: {fileID: 4900000, guid: 1a7362c2a40f6f246b50e6bb2455fe04, type: 3}
+  downMouthGO: {fileID: 1351126957}
   brushGO: {fileID: 4330338631243490485}
+  webCamTexturePixels: []
+  markerTrackingScript: {fileID: 1338243991}
+  faceTrackingScript: {fileID: 1338243987}
+--- !u!114 &1338243991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338243986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3973856beb3951841a63b5b66237e19b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScript: {fileID: 1338243990}
+  smallerId: 0
+  idPos: 0
+  meanPos: {x: 0, y: 0, z: 0}
+  meanRot: {x: 0, y: 0, z: 0, w: 0}
+  curScale: {x: 0, y: 0, z: 0}
 --- !u!1 &1351126956
 GameObject:
   m_ObjectHideFlags: 0

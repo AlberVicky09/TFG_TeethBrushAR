@@ -20,8 +20,8 @@ namespace PaperPlaneTools.AR
 		public GameObject Surface;
 
 		protected Nullable<WebCamDevice> webCamDevice = null;
-		protected WebCamTexture webCamTexture = null;
-		protected Texture2D renderedTexture = null;
+		public WebCamTexture webCamTexture = null;
+		public Texture2D renderedTexture = null;
 
 		/// <summary>
 		/// A kind of workaround for macOS issue: MacBook doesn't state it's webcam as frontal
@@ -32,7 +32,7 @@ namespace PaperPlaneTools.AR
 		/// <summary>
 		/// WebCam texture parameters to compensate rotations, flips etc.
 		/// </summary>
-		protected Unity.TextureConversionParams TextureParameters { get; private set; }
+		public Unity.TextureConversionParams TextureParameters { get; private set; }
 
 		/// <summary>
 		/// Camera device name, full list can be taken from WebCamTextures.devices enumerator
@@ -167,7 +167,7 @@ namespace PaperPlaneTools.AR
 					ReadTextureConversionParameters();
 
 					// process texture with whatever method sub-class might have in mind
-					if (ProcessTexture(webCamTexture, ref renderedTexture))
+					if (ProcessTexture())
 					{
 						RenderFrame();
 					}
@@ -181,7 +181,7 @@ namespace PaperPlaneTools.AR
 		/// <param name="input">Input WebCamTexture object</param>
 		/// <param name="output">Output Texture2D object</param>
 		/// <returns>True if anything has been processed, false if output didn't change</returns>
-		protected abstract bool ProcessTexture(WebCamTexture input, ref Texture2D output);
+		protected abstract bool ProcessTexture();
 
 		/// <summary>
 		/// Renders frame onto the surface
