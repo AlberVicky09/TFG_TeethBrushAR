@@ -9,6 +9,8 @@ namespace PaperPlaneTools.AR{
         #region Variables
         public MyMainScript mainScript;
 
+        public Camera mainCamera;
+
         private Thread faceTrackingThread;
 
         //Info of facetracking
@@ -105,6 +107,11 @@ namespace PaperPlaneTools.AR{
 		private Point mouthPos;
 
 		/// <summary>
+		/// Mouth position (in vec3)
+		/// </summary>
+		private Vector3 vec3MouthPos;
+
+		/// <summary>
 		/// Z distance of mouth
 		/// </summary>
 		private float zDistance;
@@ -147,6 +154,7 @@ namespace PaperPlaneTools.AR{
         void Start()
         {
             mouthPos = new Point(0,0);
+            vec3MouthPos = new Vector3(0,0,0);
 			prevMouthPos = new List<Vector3>();
             faceTrackingThread = new Thread(FaceDetectionThread);
             faceTrackingThread.Start();
@@ -157,7 +165,7 @@ namespace PaperPlaneTools.AR{
                 if(mainScript.image != null && mainScript.faceFlag){
                     //Face detection processing
                     processor.ProcessTexture(mainScript.image, mainScript.TextureParameters);
-                    processor.MarkDetected(ref mouthPos, ref mouthOpenning, ref faceHeight, ref faceAngle);
+                    processor.MarkDetected(mainScript.image, ref mouthPos, ref mouthOpenning, ref faceHeight, ref faceAngle);
                     //renderedTexture = Unity.MatToTexture(processor.Image, renderedTexture);
                 
                     //Calculate new position
@@ -225,7 +233,7 @@ namespace PaperPlaneTools.AR{
 
                         prevMouthPos.RemoveAt(0);
                         //Compute mean matrix using prev poses
-                        meanMouthPos = (prevMouthPos[3] * 0.6f + prevMouthPos[2] * 0.25f + prevMouthPos[1] * 0.10f + prevMouthPos[0] * 0.05f);
+                        meanMouthPos = (prevMouthPos[3] * 0.6f) + (prevMouthPos[2] * 0.25f) + (prevMouthPos[1] * 0.10f) + (prevMouthPos[0] * 0.05f);
 
                     }else{
 
@@ -239,10 +247,6 @@ namespace PaperPlaneTools.AR{
                     #endregion
 
                     #region MouthOpenning
-                    //Get min and max X and Y face positions depending on distance to camera
-                    // oldMaxOpenning = OLDNEARMAXOPENNING - (zDistance * OLDMAXOPENNINGRANGE);
-                    // oldOpenningRange = Mathf.Abs(oldMaxOpenning - OLDNMINOPENNING);
-
                     //Get proportion of mouth openning
                     if(mouthOpenning < OLDNMINOPENNING){
                         newOpenning = NEWMINOPENNING;
@@ -264,13 +268,17 @@ namespace PaperPlaneTools.AR{
         }
 
         private void OnDestroy() {
-            if(faceTrackingThread.ThreadState != ThreadState.Aborted)
+            if(faceTrackingThread.ThreadState != ThreadState.Aborted){
+                Debug.Log("Killing Face Tracking thread");
                 faceTrackingThread.Abort();
+            }
         }
 
         void OnApplicationQuit(){
-            if(faceTrackingThread.ThreadState != ThreadState.Aborted)
+            if(faceTrackingThread.ThreadState != ThreadState.Aborted){
+                Debug.Log("Killing Face Tracking thread");
                 faceTrackingThread.Abort();
+            }
         }
     }
 }

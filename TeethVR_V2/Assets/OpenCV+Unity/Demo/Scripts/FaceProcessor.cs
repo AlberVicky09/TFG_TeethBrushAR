@@ -78,6 +78,8 @@
         protected Double appliedFactor = 1.0;
 		protected bool cutFalsePositivesWithEyesSearch = false;
 
+        private Size faceSize = new Size();
+
         /// <summary>
         /// Performance options
         /// </summary>
@@ -312,7 +314,7 @@
         /// <summary>
         /// Marks detected objects on the texture
         /// </summary>
-        public void MarkDetected(ref Point mouthPos, ref float mouthOpenning, ref int faceHeight, ref float eyesAngle, bool drawSubItems = true)
+        public void MarkDetected(Mat outPutImage, ref Point mouthPos, ref float mouthOpenning, ref int faceHeight, ref float eyesAngle, bool drawSubItems = true)
         {
             // mark each found eye
             foreach (DetectedFace face in Faces)
@@ -322,6 +324,11 @@
 
                 //Return face rectangle height
                 faceHeight = face.Region.Height;
+
+                faceSize.Width = face.Region.Width;
+                faceSize.Height = face.Region.Height;
+
+                //Cv2.Ellipse((InputOutputArray)outPutImage, face.Region.Center, faceSize, 0, 0, 360, Scalar.Green);
 
                 // convex hull
                 //Cv2.Polylines(Image, new IEnumerable<Point>[] { face.Info.ConvexHull }, true, Scalar.FromRgb(255, 0, 0), 2);

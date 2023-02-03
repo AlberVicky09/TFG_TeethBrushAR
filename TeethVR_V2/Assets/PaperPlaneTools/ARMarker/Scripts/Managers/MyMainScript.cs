@@ -6,8 +6,6 @@ namespace PaperPlaneTools.AR {
 	public class MyMainScript: WebCamera {
 
         #region Variables
-		//Face tracking variables
-		public Text posTxt;
 		
 		/// <summary>
 		/// Mouth gameobject reference
@@ -23,12 +21,12 @@ namespace PaperPlaneTools.AR {
 		/// <summary>
 		/// Brush GameObject reference
 		/// </summary>
-		public GameObject brushGO;
+		public GameObject brushProxy;
 
 		/// <summary>
-		/// Webcam texture pixels
+		/// Brush GameObject reference
 		/// </summary>
-		public Color[] webCamTexturePixels = new Color[0];
+		public GameObject brushGO;
 
 		// <summary>
         /// Processed texture
@@ -106,7 +104,8 @@ namespace PaperPlaneTools.AR {
 
 		private void PositionObject() {
 
-			brushGO.transform.localPosition = markerTrackingScript.meanPos;
+			Debug.Log("Marker position: " + markerTrackingScript.meanPos);
+			brushProxy.transform.localPosition = markerTrackingScript.meanPos;
 			brushGO.transform.localRotation = markerTrackingScript.meanRot;
 			brushGO.transform.localRotation = new Quaternion(-brushGO.transform.rotation.x, brushGO.transform.rotation.y, brushGO.transform.rotation.z, -brushGO.transform.rotation.w);
 			brushGO.transform.localScale =  markerTrackingScript.curScale * 0.15f;
@@ -119,31 +118,31 @@ namespace PaperPlaneTools.AR {
 				case 0:
 					brushGO.transform.Rotate(vec90_0_0);
 					brushGO.transform.Rotate(vec0_180_0);
-					brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up) * 2.5f;
+					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up) * 2.5f;
 				break;
 
 				//Front marker
 				case 2:
 					brushGO.transform.Rotate(vec0_180_0);	
-					brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.back);
+					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.back);
 				break;
 
 				//Back marker
 				case 1:
 					brushGO.transform.Rotate(vec180_180_180);
-					brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.forward);
+					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.forward);
 				break;
 
 				//Right marker
 				case 4:
 					brushGO.transform.Rotate(-vec0_90_0);
-					brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.right);
+					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.right);
 				break;
 
 				//Left marker
 				case 3:
 					brushGO.transform.Rotate(vec0_90_0);
-					brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.left);
+					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.left);
 				break;
 
 				default:

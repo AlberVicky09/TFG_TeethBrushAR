@@ -148,20 +148,21 @@ namespace PaperPlaneTools.AR{
                     }else
                         Debug.Log("No marker!");
                 }
-                
-                //Wait
-                //Thread.Sleep(200);
             }
         }
     
         private void OnDestroy() {
-            if(markerThread.ThreadState != ThreadState.Aborted)
+            if(markerThread.ThreadState != ThreadState.Aborted){
+                Debug.Log("Killing Marker thread");
                 markerThread.Abort();
+            }
         }
 
         void OnApplicationQuit(){
-            if(markerThread.ThreadState != ThreadState.Aborted)
+            if(markerThread.ThreadState != ThreadState.Aborted){
+                Debug.Log("Killing Marker thread");
                 markerThread.Abort();
+            }
         }
     }
 }
