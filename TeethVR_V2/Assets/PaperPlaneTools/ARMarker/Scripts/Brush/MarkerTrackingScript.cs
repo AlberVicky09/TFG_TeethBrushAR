@@ -106,7 +106,7 @@ namespace PaperPlaneTools.AR{
                         //Get lower marker
                         smallerId = markerIds[0];
                         idPos = 0;
-                        for(int i = 0; i < markerIds.Count; i++){
+                        for(int i = 1; i < markerIds.Count; i++){
                             if(markerIds[i] < smallerId){
                                 smallerId = markerIds[i];
                                 idPos = i;
@@ -145,8 +145,8 @@ namespace PaperPlaneTools.AR{
                         }
 
                         curScale = MatrixHelper.GetScale(matrix);
-                    }else
-                        Debug.Log("No marker!");
+                    }//else
+                        //Debug.Log("No marker!");
                 }
             }
         }

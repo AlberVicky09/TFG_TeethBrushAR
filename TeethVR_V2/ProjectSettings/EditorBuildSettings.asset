@@ -11,7 +11,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PaperPlaneTools/ARMarker/Scenes/4 Sections Minigame.unity
     guid: bc3ebb3cbffd043beac724a39548c54b
-  - enabled: 1
-    path: Assets/PaperPlaneTools/ARMarker/Scenes/Clean All You Can Minigame.unity
-    guid: 858a7e2f1f376584f893a72b39b37ab7
   m_configObjects: {}
