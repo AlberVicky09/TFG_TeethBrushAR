@@ -15,11 +15,26 @@ public class CalendarSaver : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public static void Save() {
+    public static void Save(string timeTaken) {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/CalendarData.dat");
 
         saveData.dates.Add(System.DateTime.Now);
+        saveData.time.Add(timeTaken);
+        saveData.percentage.Add(-1f);
+
+        bf.Serialize(file, saveData);
+        file.Close();
+    }
+
+    public static void Save(float percentage)
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/CalendarData.dat");
+
+        saveData.dates.Add(System.DateTime.Now);
+        saveData.time.Add("");
+        saveData.percentage.Add(percentage);
 
         bf.Serialize(file, saveData);
         file.Close();

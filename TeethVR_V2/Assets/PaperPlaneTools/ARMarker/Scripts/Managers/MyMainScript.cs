@@ -1,7 +1,6 @@
 namespace PaperPlaneTools.AR {
 	using OpenCvSharp;
 	using UnityEngine;
-	using UnityEngine.UI;
 	
 	public class MyMainScript: WebCamera {
 
@@ -38,17 +37,21 @@ namespace PaperPlaneTools.AR {
         /// </summary>
         private Texture2D markerTexture;
 
-		//Vextors for rotation
+		//Vectors for rotation
 		private Vector3 vec90_0_0 = new Vector3(90,0,0);
 		private Vector3 vec0_180_0 = new Vector3(0,180,0);
 		private Vector3 vec180_180_180 = new Vector3(180,180,180);
 		private Vector3 vec0_90_0 = new Vector3(0,90,0);
 
-		//Reference for tracking scripts
-		public MarkerTrackingScript markerTrackingScript;
+        //Reference for tracking scripts
+        public MarkerTrackingScript markerTrackingScript;
 		public FaceTrackingScript faceTrackingScript;
 		public bool markerFlag = false;
 		public bool faceFlag = false;
+
+		private Plane facePosPlane = new Plane(Vector3.back, 0);
+		private Ray faceRay;
+		private float facePlaneDistance;
 
 		/// <summary>
 		///	Screen width
@@ -93,57 +96,57 @@ namespace PaperPlaneTools.AR {
 			markerFlag = true;
 			faceFlag = true;
 
-			//Marker detector processing
-			PositionObject();
+			if (!ParentController.gamePaused) { 
+				//Marker detector processing
+				PositionBrush();
 
-			//Locate mouth
-			LocateMouth();
+				//Locate mouth
+				LocateMouth();
+			}
 
 			return true;
 		}
 
-		private void PositionObject() {
+		private void PositionBrush() {
 
-			Debug.Log("Marker position: " + markerTrackingScript.meanPos);
-			brushProxy.transform.localPosition = markerTrackingScript.meanPos;
 			brushGO.transform.localRotation = markerTrackingScript.meanRot;
-			brushGO.transform.localRotation = new Quaternion(-brushGO.transform.rotation.x, brushGO.transform.rotation.y, brushGO.transform.rotation.z, -brushGO.transform.rotation.w);
-			brushGO.transform.localScale =  markerTrackingScript.curScale * 0.15f;
-			//Debug.Log(meanRot.eulerAngles);
+			brushGO.transform.localRotation = new Quaternion(-brushGO.transform.localRotation.x, brushGO.transform.localRotation.y, brushGO.transform.localRotation.z, -brushGO.transform.localRotation.w);
+			brushGO.transform.localScale =  markerTrackingScript.curScale;
+            brushProxy.transform.localPosition = markerTrackingScript.meanPos;
 
-			//Locate object depending on marker
-			switch(markerTrackingScript.smallerId){
+            //Locate object depending on marker
+            switch (markerTrackingScript.smallerId){
 
 				//Bottom marker
 				case 0:
 					brushGO.transform.Rotate(vec90_0_0);
-					brushGO.transform.Rotate(vec0_180_0);
-					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up) * 2.5f;
+                    brushGO.transform.Rotate(vec0_180_0);
+					brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 2.5f);
 				break;
 
 				//Front marker
 				case 2:
-					brushGO.transform.Rotate(vec0_180_0);	
-					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.back);
+                    brushGO.transform.Rotate(vec0_180_0);
+                    brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.back * 1.2f);
 				break;
 
 				//Back marker
 				case 1:
-					brushGO.transform.Rotate(vec180_180_180);
-					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.forward);
-				break;
+                    brushGO.transform.Rotate(vec180_180_180);
+                    brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.forward * 1.2f);
+                    break;
 
 				//Right marker
-				case 4:
-					brushGO.transform.Rotate(-vec0_90_0);
-					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.right);
+				case 3:
+                    brushGO.transform.Rotate(-vec0_90_0);
+                    brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.right * 1.2f);
 				break;
 
 				//Left marker
-				case 3:
-					brushGO.transform.Rotate(vec0_90_0);
-					brushProxy.transform.localPosition += brushProxy.transform.TransformDirection(Vector3.up * 1.5f + Vector3.left);
-				break;
+				case 4:
+                    brushGO.transform.Rotate(vec0_90_0);
+                    brushGO.transform.localPosition += brushGO.transform.TransformDirection(Vector3.up * 1.5f + Vector3.left * 1.2f);
+                    break;
 
 				default:
 				break;
@@ -151,12 +154,21 @@ namespace PaperPlaneTools.AR {
         }
 	
 		private void LocateMouth(){
-			
-			//Position mouth
-			mouthGO.transform.localPosition = faceTrackingScript.meanMouthPos;
 
-			//Rotate mouth
-			mouthGO.transform.localRotation = Quaternion.Euler(0f, 180f, faceTrackingScript.prevFaceAngle * 55f);
+			//Move plane
+			//Do ray things
+			//Position mouth
+			//mouthGO.transform.localPosition = faceTrackingScript.meanMouthPos;
+			facePosPlane.SetNormalAndPosition(Vector3.back, Vector3.forward * faceTrackingScript.newValueZ);
+
+            faceRay = Camera.main.ScreenPointToRay(faceTrackingScript.meanMouthPos);
+            if (facePosPlane.Raycast(faceRay, out facePlaneDistance))
+            {
+                mouthGO.transform.localPosition = faceRay.GetPoint(facePlaneDistance);
+            }
+
+            //Rotate mouth
+            mouthGO.transform.localRotation = Quaternion.Euler(0f, 180f, faceTrackingScript.prevFaceAngle * 55f);
 			
 			//Open mouth
 			downMouthGO.localPosition = new Vector3(0f, faceTrackingScript.prevOpenning, 0f);

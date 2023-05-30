@@ -3,6 +3,7 @@ namespace PaperPlaneTools.AR{
     using UnityEngine;
     using System.Threading;
     using System.Collections.Generic;
+    using System;
 
     public class MarkerTrackingScript : MonoBehaviour
     {
@@ -121,6 +122,7 @@ namespace PaperPlaneTools.AR{
                         //Add actual pos to list
                         pos = MatrixHelper.GetPosition(matrix);
                         pos.x = -pos.x;
+
                         prevPos.Add(pos);
 
                         //Remove excesive positions
@@ -137,14 +139,18 @@ namespace PaperPlaneTools.AR{
                         
                         //Avoid vibration
                         curRot = MatrixHelper.GetQuaternion(matrix);
-                        if(Quaternion.Angle(prevRot, curRot) > 5){
+                        if (Quaternion.Angle(prevRot, curRot) > 5)
+                        {
                             meanRot = Quaternion.Slerp(prevRot, curRot, 0.75f);
                             prevRot = curRot;
-                        }else{
+                        }
+                        else
+                        {
                             meanRot = prevRot;
                         }
 
                         curScale = MatrixHelper.GetScale(matrix);
+  
                     }//else
                         //Debug.Log("No marker!");
                 }

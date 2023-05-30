@@ -24,48 +24,48 @@ namespace PaperPlaneTools.AR{
 		private OpenCvSharp.Demo.FaceProcessorLive<WebCamTexture> processor;
 
 		//Mouth clamping values
-		//Face position X values
-		private const float OLDNEARMINX = 115.0f;
-		private const float OLDFARMINX = 65.0f;	
-		private const float OLDNEARMAXX = 530.0f;
-		private const float OLDFARMAXX = 580.0f;
-		private const float OLDRANGEX = 50.0f;
+		////Face position X values
+		//private const float OLDNEARMINX = 115.0f;
+		//private const float OLDFARMINX = 65.0f;	
+		//private const float OLDNEARMAXX = 530.0f;
+		//private const float OLDFARMAXX = 580.0f;
+		//private const float OLDRANGEX = 50.0f;
 
-		//Face position Y values
-		private const float OLDNEARMINY = 230.0f;
-		private const float OLDFARMINY = 200.0f;
-		private const float OLDNEARMAXY = 360.0f;		
-		private const float OLDFARMAXY = 390.0f;
-		private const float OLDRANGEY = 30.0f;
+		////Face position Y values
+		//private const float OLDNEARMINY = 230.0f;
+		//private const float OLDFARMINY = 200.0f;
+		//private const float OLDNEARMAXY = 360.0f;		
+		//private const float OLDFARMAXY = 390.0f;
+		//private const float OLDRANGEY = 30.0f;
 
-		//Face position clamped values
-		private float oldMinX;
-		private float oldMaxX;
-		private float oldRangeX;
-		private float oldMinY;
-		private float oldMaxY;
-		private float oldRangeY;
+		////Face position clamped values
+		//private float oldMinX;
+		//private float oldMaxX;
+		//private float oldRangeX;
+		//private float oldMinY;
+		//private float oldMaxY;
+		//private float oldRangeY;
 
-		//Screen position X values
-		private const float NEWNEARMAXX = 0.06f;
-		private const float NEWFARMAXX = 0.27f;
-		private const float NEWRANGEX = 0.21f;
+		////Screen position X values
+		//private const float NEWNEARMAXX = 0.06f;
+		//private const float NEWFARMAXX = 0.27f;
+		//private const float NEWRANGEX = 0.21f;
 	
-		//Screen position Y values
-		private const float NEWNEARMINY = -0.08f;
-		private const float NEWFARMINY = -0.45f;
-		private const float NEWMINRANGEY = 0.23f;
-		private const float NEWNEARMAXY = 0.15f;		
-		private const float NEWFARMAXY = 0.35f;
-		private const float NEWMAXRANGEY = 0.8f;	
+		////Screen position Y values
+		//private const float NEWNEARMINY = -0.08f;
+		//private const float NEWFARMINY = -0.45f;
+		//private const float NEWMINRANGEY = 0.23f;
+		//private const float NEWNEARMAXY = 0.15f;		
+		//private const float NEWFARMAXY = 0.35f;
+		//private const float NEWMAXRANGEY = 0.8f;	
 
-		//Face position clamped values
-		private float newMinX;
-		private float newMaxX;
-		private float newRangeX;
-		private float newMinY;
-		private float newMaxY;
-		private float newRangeY;		
+		////Face position clamped values
+		//private float newMinX;
+		//private float newMaxX;
+		//private float newRangeX;
+		//private float newMinY;
+		//private float newMaxY;
+		//private float newRangeY;		
 
 		//Screen position Z values
 		private const float OLDRANGEZ = 195.0f;
@@ -73,7 +73,7 @@ namespace PaperPlaneTools.AR{
 		private const float OLDMINVALUEZ = 105f;
 		private const float NEWRANGEZ = 1.5f;
 		private const float NEWMINVALUEZ = 1.0f;
-		private const float NEWMAXVALUEZ = 2.5f;
+		private const float NEWMAXVALUEZ = 2.5f; //Change this to min and max from brush
 
 		//Screen distance between mouths
 		private const float OLDNMINOPENNING = 6.0f;
@@ -90,10 +90,11 @@ namespace PaperPlaneTools.AR{
 		private const float NEWMINOPENNING = 0f;
 		private const float NEWRANGEOPENNING = 0.04f;
 
-		private float newValueX, newValueY, newValueZ, newOpenning;
+		private float newValueX, newValueY, newOpenning;
+        public float newValueZ;
 
-		//Previous mouth openning
-		public float prevOpenning;
+        //Previous mouth openning
+        public float prevOpenning;
 
 		//List of previous mouth positions
 		private List<Vector3> prevMouthPos;
@@ -105,16 +106,6 @@ namespace PaperPlaneTools.AR{
 		/// Mouth position
 		/// </summary>
 		private Point mouthPos;
-
-		/// <summary>
-		/// Mouth position (in vec3)
-		/// </summary>
-		private Vector3 vec3MouthPos;
-
-		/// <summary>
-		/// Z distance of mouth
-		/// </summary>
-		private float zDistance;
 		
 		/// <summary>
 		/// Face size
@@ -154,81 +145,81 @@ namespace PaperPlaneTools.AR{
         void Start()
         {
             mouthPos = new Point(0,0);
-            vec3MouthPos = new Vector3(0,0,0);
 			prevMouthPos = new List<Vector3>();
             faceTrackingThread = new Thread(FaceDetectionThread);
             faceTrackingThread.Start();
         }
 
         void FaceDetectionThread(){
-            while(true){
+            while(false){
                 if(mainScript.image != null && mainScript.faceFlag){
                     //Face detection processing
                     processor.ProcessTexture(mainScript.image, mainScript.TextureParameters);
                     processor.MarkDetected(mainScript.image, ref mouthPos, ref mouthOpenning, ref faceHeight, ref faceAngle);
                     //renderedTexture = Unity.MatToTexture(processor.Image, renderedTexture);
-                
+
+                    Debug.Log("[Mouth size: " + faceHeight + "]");
                     //Calculate new position
                     #region ClampValues
                     //Get Z proportional
-                    if(faceHeight <= OLDMINVALUEZ){
-                        zDistance = 1;
-                        newValueZ = NEWMAXVALUEZ;
-                    }else if(faceHeight >= OLDMAXVALUEZ){
-                        zDistance = 0;
+                    if (faceHeight <= OLDMINVALUEZ)
+                    {
                         newValueZ = NEWMINVALUEZ;
-                    }else{
-
-                        zDistance = (faceHeight - OLDMINVALUEZ) / OLDRANGEZ;
-                        zDistance = 1 - zDistance;
+                    }
+                    else if (faceHeight >= OLDMAXVALUEZ)
+                    {
+                        newValueZ = NEWMAXVALUEZ;
+                    }
+                    else
+                    {
                         //Clamp Z in screen values
                         newValueZ = (((faceHeight - OLDMINVALUEZ) * NEWRANGEZ) / OLDRANGEZ) + NEWMINVALUEZ;
                         newValueZ = (NEWMAXVALUEZ + NEWMINVALUEZ) - newValueZ;
                     }
 
-                    //Get min and max X and Y face positions depending on distance to camera
-                    oldMinX = OLDNEARMINX - (zDistance * OLDRANGEX);
-                    oldMaxX = OLDNEARMAXX + (zDistance * OLDRANGEX);
-                    oldRangeX = Mathf.Abs(oldMaxX - oldMinX);
+                    ////Get min and max X and Y face positions depending on distance to camera
+                    //oldMinX = OLDNEARMINX - (zDistance * OLDRANGEX);
+                    //oldMaxX = OLDNEARMAXX + (zDistance * OLDRANGEX);
+                    //oldRangeX = Mathf.Abs(oldMaxX - oldMinX);
 
-                    oldMinY = OLDNEARMINY - (zDistance * OLDRANGEY);
-                    oldMaxY = OLDNEARMAXY + (zDistance * OLDRANGEY);
-                    oldRangeY = Mathf.Abs(oldMaxY - oldMinY);
+                    //oldMinY = OLDNEARMINY - (zDistance * OLDRANGEY);
+                    //oldMaxY = OLDNEARMAXY + (zDistance * OLDRANGEY);
+                    //oldRangeY = Mathf.Abs(oldMaxY - oldMinY);
 
-                    //Get min and max X and Y screen positions depending on distance to camera
-                    newMaxX = NEWNEARMAXX + (zDistance * NEWRANGEX);
-                    newMinX = -newMaxX;
-                    newRangeX = Mathf.Abs(newMaxX - newMinX);
+                    ////Get min and max X and Y screen positions depending on distance to camera
+                    //newMaxX = NEWNEARMAXX + (zDistance * NEWRANGEX);
+                    //newMinX = -newMaxX;
+                    //newRangeX = Mathf.Abs(newMaxX - newMinX);
 
-                    newMinY = NEWNEARMINY - (zDistance * NEWMINRANGEY);
-                    newMaxY = NEWNEARMAXY + (zDistance * NEWMAXRANGEY);
-                    newRangeY = Mathf.Abs(newMaxY - newMinY);
+                    //newMinY = NEWNEARMINY - (zDistance * NEWMINRANGEY);
+                    //newMaxY = NEWNEARMAXY + (zDistance * NEWMAXRANGEY);
+                    //newRangeY = Mathf.Abs(newMaxY - newMinY);
                     #endregion
 
                     #region XPos
                     //Clamp X in screen values
-                    if(mouthPos.X <= oldMinX)
-                        newValueX = newMinX;
-                    else if(mouthPos.X >= oldMaxX)
-                        newValueX = newMaxX;
-                    else
-                        newValueX = (((mouthPos.X - oldMinX) * newRangeX) / oldRangeX) + newMinX;
+                    //if (mouthPos.X <= oldMinX)
+                    //    newValueX = newMinX;
+                    //else if(mouthPos.X >= oldMaxX)
+                    //    newValueX = newMaxX;
+                    //else
+                    //    newValueX = (((mouthPos.X - oldMinX) * newRangeX) / oldRangeX) + newMinX;
                     #endregion
 
                     #region YPos
                     //Clamp Y in screen values
-                    if(mouthPos.Y <= oldMinY)
-                        newValueY = newMinY;
-                    else if(mouthPos.Y >= oldMaxY)
-                        newValueY = newMaxY;
-                    else
-                        newValueY = (((mouthPos.Y - oldMinY) * newRangeY) / oldRangeY) + newMinY;
-                    newValueY = (newMaxY + newMinY) - newValueY;			
+                    //if(mouthPos.Y <= oldMinY)
+                    //    newValueY = newMinY;
+                    //else if(mouthPos.Y >= oldMaxY)
+                    //    newValueY = newMaxY;
+                    //else
+                    //    newValueY = (((mouthPos.Y - oldMinY) * newRangeY) / oldRangeY) + newMinY;
+                    //newValueY = (newMaxY + newMinY) - newValueY;			
                     #endregion
 
                     #region MouthPos
                     //Remove excesive positions
-                    prevMouthPos.Add(new Vector3(-newValueX, newValueY, newValueZ));
+                    prevMouthPos.Add(new Vector3(-mouthPos.X, mouthPos.Y, newValueZ));
                     if(prevMouthPos.Count >= 5){
 
                         prevMouthPos.RemoveAt(0);

@@ -17,7 +17,7 @@ public abstract class ParentController : MonoBehaviour
     protected int seconds;
     protected int minutes;
 
-    public bool gamePaused = false;
+    public static bool gamePaused = false;
 
     public virtual void Update() {
 
@@ -33,7 +33,7 @@ public abstract class ParentController : MonoBehaviour
         pauseCanvas.gameObject.SetActive(gamePaused);
     }
 
-    public void EndGame(bool storeTime){
+    public void EndGame(bool storeTime, int numCleaned){
         //Turn off camera
         mainScript.TurnOff();
 
@@ -48,10 +48,14 @@ public abstract class ParentController : MonoBehaviour
             }else{
                 PlayerPrefs.SetString("PlayerTime", minutes + ":" + seconds);
             }
+            PlayerPrefs.SetInt("HasPlayed", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetFloat("PlayerScore", numCleaned / 30);
+            PlayerPrefs.SetInt("HasPlayed", 2);
         }
         
-        PlayerPrefs.SetInt("HasPlayed", 1);
-
         //Return to main menu
         SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);
     }

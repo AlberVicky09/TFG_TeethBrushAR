@@ -19,6 +19,7 @@ public class Sections4GameController : ParentController
     private float activateChange = 0f;
     private bool quarterAlreadyChanged = true;
     private int currentQuarter = 0;
+    int numCleaned = 0;
 
     // Start is called before the first frame update
     public void Start()
@@ -107,7 +108,7 @@ public class Sections4GameController : ParentController
 
                     case 3:
                         //End the game
-                        EndGame(false);
+                        EndGame(false, numCleaned);
                     break;
                 }
                 quarterAlreadyChanged = true;
